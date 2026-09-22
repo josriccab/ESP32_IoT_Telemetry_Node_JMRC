@@ -31,8 +31,15 @@ void initSensors() {
  SensorData readAllSensors() {
  	SensorData data;
 	// 1. Read and validate DHT22 (Ambient Temperature & Humidity)
- 	data.temperature = dht.readTemperature();
- 	data.humidity = dht.readHumidity(); 
+ 	if (isnan(data.temperature) || isnan(data.humidity)) {
+        data.dhtValid = false;
+        data.temperature = 0.0f;
+        data.humidity = 0.0f;
+    } else {
+        data.dhtValid = true;
+        data.temperature = dht.readTemperature();
+ 	    data.humidity = dht.readHumidity();
+    }
 	// 2. Read and validate Soil Moisture Sensor (Analog ADC)
     data.soilMoistureRaw = analogRead(PIN_SOIL_MOISTURE);
     // Defensive check: Detect physical disconnection (open circuit / rail short)
@@ -42,7 +49,7 @@ void initSensors() {
     } else {
         data.soilValid = true;
         // Map the raw value (0-4095) to a soil moisture percentage (0-100%) and constrain
-        int mappedValue = map(data.soilMoistureRaw, 4095, 1200, 0, 100); // Ajustado según calibración típica (seco/húmedo)
+        int mappedValue = map(data.soilMoistureRaw, 4095, 0, 100, 0); // Ajustado según calibración típica (seco/húmedo)
         data.soilMoisturePercent = constrain(mappedValue, 0, 100);
     }
 	// 3. Read and validate LDR (Light Dependent Resistor)

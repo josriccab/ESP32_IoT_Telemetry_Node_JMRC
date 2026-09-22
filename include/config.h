@@ -2,12 +2,14 @@
 #define CONFIG_H
 
 // --- HARDWARE PIN MAPPING ---
-#define PIN_DHT             4
-#define PIN_SOIL_MOISTURE   34
-#define PIN_LDR             36
-#define PIN_RELAY           23
-#define PIN_NEOPIXEL        27
-#define PIN_BUZZER          18
+// --- HARDWARE PIN DEFINITIONS ---
+#define PIN_RELAY           23  // Output pin for the water pump relay
+#define PIN_BUZZER          18  // Output pin for the buzzer alarm
+#define PIN_NEOPIXEL        27  // Data pin for the status RGB LED (WS2812)
+
+#define PIN_DHT             4   // Data pin for DHT22 (Temperature & Humidity)
+#define PIN_SOIL_MOISTURE   34  // Analog pin (ADC1) for capacitive soil moisture sensor
+#define PIN_LDR             35  // Analog pin (ADC1) for photoresistor (Light intensity)
 
 // --- I2C DISPLAY CONFIGURATION ---
 #define I2C_SDA             21
@@ -17,7 +19,22 @@
 #define LCD_ROWS            2
 
 // // --- BUSINESS LOGIC THRESHOLDS ---
-#define SOIL_DRY_THRESHOLD   400
-#define TEMP_HIGH_THRESHOLD 35.0
+// --- SENSOR CONFIGURATION & HYSTERESIS THRESHOLDS ---
+#define SOIL_PUMP_ON_THRESHOLD   30  // Soil moisture percentage to trigger watering (< 30%)
+#define SOIL_PUMP_OFF_THRESHOLD  50  // Soil moisture percentage to stop watering (> 50%)
+#define MAX_PUMP_ON_TIME_MS      120000 // Runaway protection: max 120 seconds continuous pumping
+
+#define TEMP_HIGH_THRESHOLD      35.0 // Thermal warning threshold in Celsius
+// --- NETWORK & MQTT INDUSTRIAL CONFIGURATION ---
+// NOTE: In a secure deployment pipeline, these macros can be overridden 
+// via build flags (-D) in platformio.ini to prevent leaking secrets in Git.
+#define WIFI_SSID        "Redmi Note 13 Pro 5G"
+#define WIFI_PASSWORD    "12345678910"
+
+#define MQTT_SERVER      "broker.hivemq.com"//"219024e0d99249d9b97689d9c447714d.s1.eu.hivemq.cloud" // Replace with your local broker IP (e.g., "192.168.1.150")
+#define MQTT_PORT        1883//8883
+#define MQTT_CLIENT_ID   "SmartGardenNode_01"
+#define MQTT_USER        ""//"admin" // Leave blank if broker does not require authentication
+#define MQTT_PASSWORD    ""//"admin1234" // Leave blank if broker does not require authentication
 
 #endif

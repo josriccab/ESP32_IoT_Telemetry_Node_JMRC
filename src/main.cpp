@@ -6,9 +6,14 @@
 
 
 
-// // --- NON-BLOCKING TIMING VARIABLES ---
+// --- NON-BLOCKING TIMING VARIABLES ---
 unsigned long previousMillis = 0;
 const long interval = 2000; // Read sensors and update system every 2 seconds
+
+// Pump state variable for hysteresis control (prevents relay chatter)
+bool pumpState = false;
+unsigned long pumpStartTime = 0; // Tracks when the pump started running
+bool pumpTimeoutError = false;   // Critical error flag for timeout exceeded
 
 void setup() {
   // put your setup code here, to run once:
@@ -20,11 +25,22 @@ void setup() {
 }
 
 void loop() {
+
+// Placed outside the 2-second interval so the operator can clear safety errors immediately.
+if (Serial.available() > 0) {
+    char command = Serial.read();
+    if (command == 'R' || command == 'r') {
+        pumpTimeoutError = false;
+        pumpStartTime = 0;
+        Serial.println(F("[INFO] Pump timeout error manually cleared by operator."));
+    }
+}
+
 unsigned long currentMillis = millis();
 
-    // Non-blocking task execution based on defined interval
-    if (currentMillis - previousMillis >= interval) {
-        previousMillis = currentMillis;
+// Non-blocking task execution based on defined interval
+if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
   
 SensorData data = readAllSensors();
 // Check each sensor cleanly using the flags processed in sensors.h
@@ -38,7 +54,33 @@ if (!data.ldrValid) {
     Serial.println(F("[ERROR] LDR light sensor failure!"));
 }
   // 2. Business Logic and Automation Rules
-  bool needsWatering = (data.soilMoistureRaw < SOIL_DRY_THRESHOLD);
+if (data.soilValid) {
+    if (data.soilMoisturePercent < SOIL_PUMP_ON_THRESHOLD && !pumpTimeoutError) {
+      // Hysteresis ON threshold: triggers only when soil drops below SOIL_PUMP_ON_THRESHOLD (e.g., 30%)
+      // Also guarded by !pumpTimeoutError to prevent restarting after a safety shutdown  
+      if (!pumpState) {
+           // Transition: Pump just turned on, record the start time for the watchdog timer
+           pumpStartTime = currentMillis;
+           pumpState = true;
+        } else {
+        // Pump was already running: check elapsed time
+        if (currentMillis - pumpStartTime > MAX_PUMP_ON_TIME_MS) {
+            pumpState = false;       // Emergency shut-off to prevent motor burnout or flooding
+            pumpTimeoutError = true; // Lock further startups until soil recovers or system resets
+            Serial.println(F("[CRITICAL] Pump timeout! Auto-shutoff engaged."));
+        }
+     }
+} // Hysteresis OFF threshold: pump remains ON across the dead-band zone (30%-50%) 
+  // and only shuts off once moisture exceeds SOIL_PUMP_OFF_THRESHOLD (e.g., 50%)
+  else if (data.soilMoisturePercent > SOIL_PUMP_OFF_THRESHOLD) {
+  pumpState = false;
+  pumpTimeoutError = false; // Reset error flag once soil is properly hydrated
+  }
+} else {
+        pumpState = false; // Fail-safe: shut off if sensor disconnects
+  }
+  
+  bool needsWatering = pumpState;
   bool isOverheating = (data.temperature > TEMP_HIGH_THRESHOLD);
   // Actuate Relay (Watering Pump)
   setWateringPump(needsWatering);

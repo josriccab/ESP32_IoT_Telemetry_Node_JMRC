@@ -17,7 +17,11 @@ void initActuators() {
 // Ensure safe default state (everything OFF at startup)
 	digitalWrite(PIN_RELAY, LOW);
 	digitalWrite(PIN_BUZZER, LOW);
-
+// Initialize classic LEDC PWM channel for the buzzer (ESP32 Core v2.x compatible)
+// Parameters: channel (0), frequency (2000 Hz), resolution (8 bits)
+    ledcSetup(0, 2000, 8);
+    ledcAttachPin(PIN_BUZZER, 0);
+	
 	strip.begin();
 	strip.setBrightness(50); // Set moderate brightness to protect power supply
 	strip.show();            // Initialize strip to "off" state
