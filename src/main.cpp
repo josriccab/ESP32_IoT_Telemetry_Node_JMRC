@@ -3,12 +3,15 @@
 #include <sensors.h>  
 #include <actuators.h>  
 #include <display.h>
-
+#include <network.h>
 
 
 // --- NON-BLOCKING TIMING VARIABLES ---
 unsigned long previousMillis = 0;
 const long interval = 2000; // Read sensors and update system every 2 seconds
+// Declaras esto fuera del loop (al principio de main.cpp o como variable global)
+unsigned long lastTelemetryTime = 0;
+const unsigned long telemetryInterval = 5000; // 5000 ms = 5 segundos
 
 // Pump state variable for hysteresis control (prevents relay chatter)
 bool pumpState = false;
@@ -16,16 +19,30 @@ unsigned long pumpStartTime = 0; // Tracks when the pump started running
 bool pumpTimeoutError = false;   // Critical error flag for timeout exceeded
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
+  // Conectar a la red Wi-Fi simulada de Wokwi
+  WiFi.begin("Wokwi-GUEST", "");
+  
+  // Esperar a que se conecte (opcional pero recomendado para depurar)
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+  Serial.println(F("\n[WiFi] Connected successfully to Wokwi-GUEST!"));
+  // put your setup code here, to run once:
+  
   Serial.println(F("[INIT] Booting Enterprise Smart Garden Node..."));
   initSensors();
   initActuators();
   initDisplay();
+  initNetwork();
 }
 
 void loop() {
-
+  // Mantener el cliente MQTT vivo en segundo plano
+  // Es vital que esto se ejecute en cada pasada del loop para mantener la conexión viva
+  mqttClient.loop();
+  handleNetwork();
 // Placed outside the 2-second interval so the operator can clear safety errors immediately.
 if (Serial.available() > 0) {
     char command = Serial.read();
@@ -106,5 +123,12 @@ if (data.soilValid) {
 
   // 4. Update LCD Display with live telemetry
   updateDisplay(data, needsWatering, isOverheating);
+
+  // 5. Publicar telemetría por MQTT hacia la nube
+  // Control de tiempo para publicar en la nube sin sobrecargar
+  if (millis() - lastTelemetryTime >= telemetryInterval) {
+    lastTelemetryTime = millis(); // Actualizamos el cronómetro
+        publishTelemetry(data, needsWatering, pumpTimeoutError, isOverheating, needsWatering);
+  }
 }
 }

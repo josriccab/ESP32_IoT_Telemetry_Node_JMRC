@@ -28,13 +28,18 @@
 // --- NETWORK & MQTT INDUSTRIAL CONFIGURATION ---
 // NOTE: In a secure deployment pipeline, these macros can be overridden 
 // via build flags (-D) in platformio.ini to prevent leaking secrets in Git.
-#define WIFI_SSID        "Redmi Note 13 Pro 5G"
-#define WIFI_PASSWORD    "12345678910"
+#define WIFI_SSID        "Wokwi-GUEST"
+#define WIFI_PASSWORD    ""
+// --- CREDENCIALES CLÚSTER REAL (Para cuando subas a la placa física) ---
+// #define MQTT_SERVER      "219024e0d99249d9b97689d9c447714d.s1.eu.hivemq.cloud" // Replace with your local broker IP (e.g., "192.168.1.150")
+// #define MQTT_PORT        8883
+// #define MQTT_USER        "admin" // Leave blank if broker does not require authentication
+// #define MQTT_PASSWORD    "admin1234" // Leave blank if broker does not require authentication
+// --- CONFIGURACIÓN PARA WOKWI (Activa ahora) ---
+#define MQTT_SERVER   "broker.hivemq.com"
+#define MQTT_PORT     1883
+#define MQTT_USER     "" 
+#define MQTT_PASSWORD ""
 
-#define MQTT_SERVER      "broker.hivemq.com"//"219024e0d99249d9b97689d9c447714d.s1.eu.hivemq.cloud" // Replace with your local broker IP (e.g., "192.168.1.150")
-#define MQTT_PORT        1883//8883
-#define MQTT_CLIENT_ID   "SmartGardenNode_01"
-#define MQTT_USER        ""//"admin" // Leave blank if broker does not require authentication
-#define MQTT_PASSWORD    ""//"admin1234" // Leave blank if broker does not require authentication
-
+#define MQTT_CLIENT_ID   "SmartGardenNode_JMRC_9999"
 #endif
