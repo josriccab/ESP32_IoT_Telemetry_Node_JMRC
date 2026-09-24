@@ -77,12 +77,10 @@ void publishTelemetry(SensorData data, bool pumpState, bool timeoutError,bool is
     // 1. Si la conexión se cayó, la reconectamos automáticamente de inmediato
     if (!mqttClient.connected()) {
     Serial.println(F("[MQTT] Connection lost. Attempting reconnection..."));
-    if (mqttClient.connect(MQTT_CLIENT_ID)) {
-      Serial.println(F("[MQTT] Reconnected successfully!"));
-    } else {
-      Serial.println(F("[MQTT] Reconnection failed. Retrying next cycle."));
-      return; // Si no logra reconectar, sale para no bloquear el programa
-    }
+    if (!reconnectNonBlocking()) {
+            Serial.println(F("[MQTT] Reconnection failed. Retrying next cycle."));
+            return; // Sale para no bloquear el programa
+        }
   }
   // 2. Mantener la pila de red activa obligatoriamente justo antes de serializar
   mqttClient.loop();
@@ -90,8 +88,9 @@ void publishTelemetry(SensorData data, bool pumpState, bool timeoutError,bool is
     StaticJsonDocument<512> doc;
     doc["device_id"] = MQTT_CLIENT_ID;
     doc["uptime_ms"] = millis();
-    doc["temperature"] = data.temperature;
-    doc["humidity"] = data.humidity;
+    // Redondeamos a 2 decimales para evitar decimales infinitos como -1.600000024
+    doc["temperature"] = roundf(data.temperature * 100.0) / 100.0;
+    doc["humidity"] = roundf(data.humidity * 100.0) / 100.0;
     doc["soil_moisture"] = data.soilMoisturePercent;
     doc["light_raw"] = data.lightLevelRaw;
     doc["pump_status"] = pumpState ? "ON" : "OFF";
