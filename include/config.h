@@ -54,4 +54,4 @@
 
 #define MQTT_CLIENT_ID   "SmartGardenNode_JMRC_9999"
 
-#endif
+#endif // CONFIG_H

@@ -1,3 +1,9 @@
+/**
+ * @file main.cpp
+ * @brief Enterprise IoT Smart Garden - Main execution firmware for ESP32.
+ * @author JMRC
+ */
+
 #include <Arduino.h>
 #include "config.h"
 #include <sensors.h>  

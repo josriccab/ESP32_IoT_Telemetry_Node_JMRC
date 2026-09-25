@@ -1,8 +1,17 @@
+/**
+ * @file display.h
+ * @brief I2C LCD management, non-blocking screen rotation, and telemetry rendering.
+ * @author JMRC
+ */
+
 #ifndef DISPLAY_H
 #define DISPLAY_H
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include "config.h"
+#include "sensors.h"
 
 // --- I2C LCD INITIALIZATION ---
 LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
@@ -12,9 +21,11 @@ unsigned long lastScreenSwitch = 0;
 const unsigned long SCREEN_INTERVAL = 3000; // Switch view every 3 seconds
 bool toggleScreen = false;
 
-// Función para inicializar el display
+/**
+ * @brief Initializes the I2C bus, LCD display, and shows a startup splash screen.
+ */
+
 inline void initDisplay() {
-    //Initialize I2C and LCD Display
     Wire.begin(I2C_SDA, I2C_SCL);
     lcd.init();
     lcd.backlight();
@@ -24,21 +35,28 @@ inline void initDisplay() {
     lcd.print(F("Smart Garden IoT"));
     lcd.setCursor(0, 1);
     lcd.print(F("Initializing..."));
-    delay(1500); // Brief pause for readability
+    delay(1500); // Brief pause for readability during boot
     lcd.clear();
 }
 
-// Refresh sensor telemetry and actuator states on screen
+/**
+ * @brief Refreshes sensor telemetry and actuator states on the LCD with a non-blocking layout toggle.
+ * @param data Struct containing current environmental sensor readings.
+ * @param needsWatering Boolean flag indicating active irrigation status.
+ * @param isOverheating Boolean flag indicating a thermal warning state.
+ */
+
 inline void updateDisplay(const SensorData& data, bool needsWatering, bool isOverheating) {
     unsigned long currentMillis = millis();
 
-    // Non-blocking screen toggle interval
+    // Non-blocking screen toggle interval to rotate metrics views
     if (currentMillis - lastScreenSwitch >= SCREEN_INTERVAL) {
         lastScreenSwitch = currentMillis;
         toggleScreen = !toggleScreen;
         lcd.clear(); // Clear residual characters when switching layouts
     }
-    // Row 0: Always keeps Temperature and Humidity Telemetry (or warning)
+
+    // Row 0: Always keeps Temperature and Humidity Telemetry (or overrides with warnings)
     lcd.setCursor(0, 0);
     if (isOverheating) {
         lcd.print(F("! TEMP WARNING !")); 
@@ -51,7 +69,8 @@ inline void updateDisplay(const SensorData& data, bool needsWatering, bool isOve
         lcd.print(data.humidity, 0);
         lcd.print(F("%  ")); // Trailing spaces to clear residual characters
     }
-    // Row 1: Alternates between Actuator Status and Light/Soil details
+
+   // Row 1: Alternates between Actuator Status and Light/Soil details
     lcd.setCursor(0, 1);
     if (isOverheating) {
         lcd.print(F("Check Cooling   ")); 
@@ -80,4 +99,4 @@ inline void updateDisplay(const SensorData& data, bool needsWatering, bool isOve
     }
 }
 
-#endif
+#endif // DISPLAY_H
