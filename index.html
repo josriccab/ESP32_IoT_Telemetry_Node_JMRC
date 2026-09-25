@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise IoT Dashboard - Smart Garden JMRC</title>
-    <!-- Tailwind CSS for modern engineering UI layout -->
-    <script src="https://tailwindcss.com"></script>
+    <!-- Tailwind CSS Play CDN estable -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Official MQTT browser client library via CDN -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <!-- Google Fonts for professional typography -->
@@ -15,7 +15,7 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6 md:p-10">
+<body class="min-h-screen p-6 md:p-10">
 
     <div class="max-w-6xl mx-auto space-y-8">
         
@@ -34,7 +34,10 @@
                     </p>
                 </div>
             </div>
-
+            <div class="px-4 py-2 rounded-xl text-xs font-mono font-semibold bg-slate-800/80 text-slate-300 border border-slate-700 flex items-center space-x-2">
+                <span>🕒</span>
+                <span id="live-clock">--:--:--</span>
+            </div>
             <div id="status-badge" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center space-x-2">
                 <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
                 <span>Connecting to Broker...</span>
