@@ -15,7 +15,7 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="min-h-screen p-6 md:p-10">
+<body class="bg-slate-500 min-h-screen p-6 md:p-10">
 
     <div class="max-w-6xl mx-auto space-y-8">
         
@@ -128,6 +128,32 @@
                     </div>
                     <p class="text-xs text-slate-500 mt-4 text-center">Automated hysteresis control active</p>
                 </div>
+                
+                <!-- RGB System Status LEDs -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl">
+                    <div class="flex justify-between items-center text-slate-400 mb-4">
+                        <span class="text-xs font-semibold uppercase tracking-wider">RGB System Status LEDs</span>
+                        <span class="text-xl">💡</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3 text-center">
+                        <!-- LED Verde -->
+                        <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 flex flex-col items-center gap-2">
+                            <div id="led-green" class="w-4 h-4 rounded-full bg-emerald-950 border border-emerald-800 transition-all duration-300"></div>
+                            <span class="text-[10px] font-mono text-slate-400 uppercase">Normal</span>
+                        </div>
+                        <!-- LED Azul -->
+                        <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 flex flex-col items-center gap-2">
+                            <div id="led-blue" class="w-4 h-4 rounded-full bg-blue-950 border border-blue-800 transition-all duration-300"></div>
+                            <span class="text-[10px] font-mono text-slate-400 uppercase">Pumping</span>
+                        </div>
+                        <!-- LED Rojo -->
+                        <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 flex flex-col items-center gap-2">
+                            <div id="led-red" class="w-4 h-4 rounded-full bg-rose-950 border border-rose-800 transition-all duration-300"></div>
+                            <span class="text-[10px] font-mono text-slate-400 uppercase">Alert</span>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- System State -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
@@ -157,6 +183,11 @@
 
         const client = mqtt.connect(brokerUrl);
         const badge = document.getElementById('status-badge');
+        
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+        }, 1000);
 
         client.on('connect', () => {
             badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Live Connected</span>';
@@ -199,12 +230,40 @@
                 const pumpContainer = document.getElementById('pump-container');
                 pumpEl.innerText = data.pump_status;
 
-                if (data.pump_status === "ON") {
+                // References to visual RGB LEDs
+                const greenLed = document.getElementById('led-green');
+                const blueLed = document.getElementById('led-blue');
+                const redLed = document.getElementById('led-red');
+                // Simply mirror whatever state the ESP32 calculated and sent in the MQTT payload
+                const currentState = data.system_state ? data.system_state.toUpperCase() : "NORMAL";
+
+                // System logic based on pump status and system state
+                if (currentState.includes("WARNING") || currentState.includes("ALERT")) {
+                    // Turn ON Red LED for warnings or error states
+                    pumpContainer.className = "mt-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center shadow-lg shadow-rose-500/10";
+                    pumpEl.className = "text-lg font-bold font-mono tracking-wide text-rose-400";
+                    
+                    blueLed.className = "w-4 h-4 rounded-full bg-blue-950 border border-blue-800";
+                    greenLed.className = "w-4 h-4 rounded-full bg-emerald-950 border border-emerald-800";
+                    redLed.className = "w-4 h-4 rounded-full bg-rose-500 shadow-lg shadow-rose-500/50 border border-rose-300 animate-ping";
+                } 
+                else if (currentState.includes("WATERING") || data.pump_status === "ON") {
+                    // Turn ON Blue LED when the pump is active (watering)
                     pumpContainer.className = "mt-2 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center shadow-lg shadow-blue-500/10 animate-pulse";
                     pumpEl.className = "text-lg font-bold font-mono tracking-wide text-blue-400";
-                } else {
+                    
+                    blueLed.className = "w-4 h-4 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 border border-blue-300 animate-pulse";
+                    greenLed.className = "w-4 h-4 rounded-full bg-emerald-950 border border-emerald-800";
+                    redLed.className = "w-4 h-4 rounded-full bg-rose-950 border border-rose-800";
+                } 
+                else {
+                    // Turn ON Green LED for normal standby / hysteresis monitoring
                     pumpContainer.className = "mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center";
                     pumpEl.className = "text-lg font-bold font-mono tracking-wide text-slate-400";
+                    
+                    blueLed.className = "w-4 h-4 rounded-full bg-blue-950 border border-blue-800";
+                    greenLed.className = "w-4 h-4 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 border border-emerald-300";
+                    redLed.className = "w-4 h-4 rounded-full bg-rose-950 border border-rose-800";
                 }
 
                 const now = new Date();
