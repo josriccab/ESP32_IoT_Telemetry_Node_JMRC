@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Smart Garden JMRC</title>
-    <!-- Tailwind CSS para que se vea moderno e ingenieril -->
+    <title>Enterprise IoT Dashboard - Smart Garden JMRC</title>
+    <!-- Tailwind CSS for modern engineering UI layout -->
     <script src="https://tailwindcss.com"></script>
-    <!-- Librería MQTT oficial para navegadores web -->
+    <!-- Official MQTT browser client library via CDN -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen p-6">
 
     <div class="max-w-5xl mx-auto">
-        <!-- Encabezado -->
+        <!-- Header Section -->
         <header class="mb-8 border-b border-gray-800 pb-4 flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold text-green-400">🪴 Sistema de Riego Inteligente</h1>
@@ -23,40 +23,40 @@
             </div>
         </header>
 
-        <!-- Rejilla de Indicadores (Metricas limpias, sin JSON feo) -->
+        <!-- Metrics Grid -->
         <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            <!-- Temperatura -->
+            <!-- Temperature Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Temperatura</p>
                 <p class="text-4xl font-extrabold text-white mt-2"><span id="val-temp">--</span> <span class="text-xl text-gray-400">°C</span></p>
             </div>
 
-            <!-- Humedad Ambiente -->
+            <!-- Humidity Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Humedad Aire</p>
                 <p class="text-4xl font-extrabold text-white mt-2"><span id="val-hum">--</span> <span class="text-xl text-gray-400">%</span></p>
             </div>
 
-            <!-- Luz -->
+            <!-- Light Level Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Luz Relativa</p>
                 <p class="text-4xl font-extrabold text-white mt-2"><span id="val-light">--</span> <span class="text-xl text-gray-400">pts</span></p>
             </div>
 
-            <!-- Humedad Suelo -->
+            <!-- Soil Moisture Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Humedad del Suelo</p>
                 <p class="text-4xl font-extrabold text-white mt-2"><span id="val-soil">--</span></p>
             </div>
 
-            <!-- Estado de la Bomba -->
+            <!-- Pump Status Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Estado de Bomba</p>
                 <p class="text-2xl font-bold mt-3 px-3 py-1 rounded inline-block bg-gray-700 text-gray-300" id="val-pump">DESCONOCIDO</p>
             </div>
 
-            <!-- Estado General del Sistema -->
+            <!-- System Operational State Card -->
             <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
                 <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Estado de Sistema</p>
                 <p class="text-xl font-mono mt-3 text-blue-400" id="val-state">ESPERANDO DATOS...</p>
@@ -69,9 +69,9 @@
         </footer>
     </div>
 
-    <!-- Lógica de Conexión MQTT y limpieza del JSON -->
+    <!-- MQTT Secure WebSocket Client Logic -->
     <script>
-        // Configuración del Broker Público de HiveMQ (vía WebSockets seguros)
+        // Public HiveMQ Broker configuration via secure WebSockets
         const brokerUrl = 'wss://broker.hivemq.com:8884/mqtt';
         const topic = 'garden/SmartGardenNode_JMRC_9999/telemetry';
 
@@ -90,12 +90,12 @@
             console.error(err);
         });
 
-        // Aquí ocurre la magia: interceptamos el JSON y lo "limpiamos" para la pantalla
+        // Parse incoming telemetry JSON and update DOM elements dynamically
         client.on('message', (receivedTopic, message) => {
             try {
                 const data = JSON.parse(message.toString());
                 
-                // Inyectamos los datos limpios y formateados en el HTML
+                // Inject clean formatted values into HTML elements
                 document.getElementById('node-id').innerText = data.device_id;
                 document.getElementById('val-temp').innerText = Number(data.temperature).toFixed(1);
                 document.getElementById('val-hum').innerText = data.humidity;
@@ -103,7 +103,7 @@
                 document.getElementById('val-soil').innerText = data.soil_moisture;
                 document.getElementById('val-state').innerText = data.system_state;
                 
-                // Darle estilo dinámico al estado de la bomba
+                // Update timestamp for the last successfully processed packet
                 const pump = document.getElementById('val-pump');
                 pump.innerText = data.pump_status;
                 if(data.pump_status === "ON") {
@@ -112,7 +112,7 @@
                     pump.className = "text-xl font-bold mt-3 px-3 py-1 rounded inline-block bg-red-500/20 text-red-400 border border-red-500/30";
                 }
 
-                // Hora de actualización
+                // Update timestamp for the last successfully processed packet
                 const ahora = new Date();
                 document.getElementById('val-time').innerText = ahora.toLocaleTimeString();
 
