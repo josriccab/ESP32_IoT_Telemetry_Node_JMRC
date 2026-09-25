@@ -15,11 +15,11 @@
         .font-mono { font-family: 'JetBrains Mono', monospace; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6 md:p-10 selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 md:p-10">
 
     <div class="max-w-6xl mx-auto space-y-8">
         
-        <!-- Top Navigation / Header Bar -->
+        <!-- Header Bar -->
         <header class="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-6 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div class="flex items-center space-x-4">
                 <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-3xl animate-pulse">
@@ -27,29 +27,27 @@
                 </div>
                 <div>
                     <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Smart Garden <span class="text-emerald-400 font-mono text-lg">Node Control</span>
+                        Smart Garden <span class="text-emerald-400 font-mono text-lg">HMI Control</span>
                     </h1>
                     <p class="text-xs md:text-sm text-slate-400 mt-0.5">
-                        Target Device: <span id="node-id" class="font-mono text-emerald-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Awaiting telemetry...</span>
+                        Active Node: <span id="node-id" class="font-mono text-emerald-300 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">Awaiting telemetry...</span>
                     </p>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-3">
-                <div id="status-badge" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center space-x-2 shadow-inner">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
-                    <span>Connecting to Broker...</span>
-                </div>
+            <div id="status-badge" class="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                <span>Connecting to Broker...</span>
             </div>
         </header>
 
-<!-- Main Dashboard Layout Grid -->
+        <!-- Dashboard Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Left & Center Columns: Environmental Metrics (2 Span) -->
+            <!-- Environmental Metrics (2 Columns) -->
             <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 
-                <!-- Temperature Card -->
+                <!-- Temperature -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-emerald-500/40 transition-all duration-300 group">
                     <div class="flex justify-between items-center text-slate-400 mb-3">
                         <span class="text-xs font-semibold uppercase tracking-wider">Ambient Temperature</span>
@@ -64,7 +62,7 @@
                     </div>
                 </div>
 
-                <!-- Air Humidity Card -->
+                <!-- Air Humidity -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-blue-500/40 transition-all duration-300 group">
                     <div class="flex justify-between items-center text-slate-400 mb-3">
                         <span class="text-xs font-semibold uppercase tracking-wider">Air Humidity</span>
@@ -79,7 +77,7 @@
                     </div>
                 </div>
 
-                <!-- Soil Moisture Card -->
+                <!-- Soil Moisture -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-cyan-500/40 transition-all duration-300 group">
                     <div class="flex justify-between items-center text-slate-400 mb-3">
                         <span class="text-xs font-semibold uppercase tracking-wider">Soil Moisture Content</span>
@@ -94,7 +92,7 @@
                     </div>
                 </div>
 
-                <!-- Light Level Card -->
+                <!-- Light Level -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-amber-500/40 transition-all duration-300 group">
                     <div class="flex justify-between items-center text-slate-400 mb-3">
                         <span class="text-xs font-semibold uppercase tracking-wider">Illumination Level</span>
@@ -111,10 +109,10 @@
 
             </div>
 
-            <!-- Right Column: System Status & Actuators Control Panel -->
+            <!-- Actuators & System Status (1 Column) -->
             <div class="space-y-6">
                 
-                <!-- Pump Status Widget -->
+                <!-- Pump Status -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center text-slate-400 mb-3">
@@ -128,11 +126,11 @@
                     <p class="text-xs text-slate-500 mt-4 text-center">Automated hysteresis control active</p>
                 </div>
 
-                <!-- System Operational State Widget -->
+                <!-- System State -->
                 <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-center text-slate-400 mb-3">
-                            <span class="text-xs font-semibold uppercase tracking-wider">Safety & Operational State</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider">Operational State</span>
                             <span class="text-xl">🛡️</span>
                         </div>
                         <div id="state-container" class="mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center transition-all duration-300">
@@ -140,23 +138,17 @@
                         </div>
                     </div>
                     <div class="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-500">
-                        <span>Sync Status: <span id="val-time" class="font-mono text-slate-400">--:--:--</span></span>
+                        <span>Last Sync: <span id="val-time" class="font-mono text-slate-400">--:--:--</span></span>
                     </div>
                 </div>
 
             </div>
 
         </div>
-
-        <!-- Footer -->
-        <footer class="text-center text-xs text-slate-600 pt-4">
-            Enterprise IoT Smart Garden System &bull; Powered by ESP32, MQTT & Tailwind CSS
-        </footer>
     </div>
 
-    <!-- MQTT Secure WebSocket Client Logic -->
+    <!-- MQTT Script -->
     <script>
-        // Public HiveMQ Broker configuration via secure WebSockets
         const brokerUrl = 'wss://broker.hivemq.com:8884/mqtt';
         const topic = 'garden/SmartGardenNode_JMRC_9999/telemetry';
 
@@ -165,13 +157,13 @@
 
         client.on('connect', () => {
             badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Live Connected</span>';
-            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center space-x-2 shadow-inner";
+            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center space-x-2";
             client.subscribe(topic);
         });
 
         client.on('error', (err) => {
             badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Connection Error</span>';
-            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center space-x-2 shadow-inner";
+            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center space-x-2";
             console.error(err);
         });
 
@@ -179,10 +171,8 @@
             try {
                 const data = JSON.parse(message.toString());
                 
-                // Update Node ID
                 document.getElementById('node-id').innerText = data.device_id;
                 
-                // Values & Progress Bars Updates
                 const temp = Number(data.temperature).toFixed(1);
                 const hum = Number(data.humidity).toFixed(0);
                 const soil = Number(data.soil_moisture).toFixed(0);
@@ -202,7 +192,6 @@
 
                 document.getElementById('val-state').innerText = data.system_state;
                 
-                // Pump Interactive Styles
                 const pumpEl = document.getElementById('val-pump');
                 const pumpContainer = document.getElementById('pump-container');
                 pumpEl.innerText = data.pump_status;
@@ -215,15 +204,6 @@
                     pumpEl.className = "text-lg font-bold font-mono tracking-wide text-slate-400";
                 }
 
-                // System State Interactive Border Highlight
-                const stateContainer = document.getElementById('state-container');
-                if (data.system_state === "WARNING_OVERHEATING") {
-                    stateContainer.className = "mt-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center animate-bounce";
-                } else {
-                    stateContainer.className = "mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center";
-                }
-
-                // Timestamp update
                 const now = new Date();
                 document.getElementById('val-time').innerText = now.toLocaleTimeString();
 
