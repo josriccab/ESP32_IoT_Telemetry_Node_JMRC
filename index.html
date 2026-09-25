@@ -43,81 +43,114 @@
             </div>
         </header>
 
-        <!-- Metrics Grid -->
-        <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Main Dashboard Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Temperature Card -->
-            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-green-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">Temperature</span>
-                    <span class="text-xl">🌡️</span>
+            <!-- Left & Center Columns: Environmental Metrics (2 Span) -->
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                
+                <!-- Temperature Card -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-emerald-500/40 transition-all duration-300 group">
+                    <div class="flex justify-between items-center text-slate-400 mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Ambient Temperature</span>
+                        <span class="text-xl p-2 bg-slate-800/80 rounded-lg group-hover:scale-110 transition-transform">🌡️</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="val-temp" class="text-4xl font-extrabold text-white tracking-tight">--</span>
+                        <span class="text-xl font-medium text-slate-400">°C</span>
+                    </div>
+                    <div class="mt-4 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-temp" class="bg-emerald-400 h-full w-0 transition-all duration-500"></div>
+                    </div>
                 </div>
-                <p class="text-4xl font-extrabold text-white mt-1">
-                    <span id="val-temp">--</span> <span class="text-xl text-gray-400 font-normal">°C</span>
-                </p>
+
+                <!-- Air Humidity Card -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-blue-500/40 transition-all duration-300 group">
+                    <div class="flex justify-between items-center text-slate-400 mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Air Humidity</span>
+                        <span class="text-xl p-2 bg-slate-800/80 rounded-lg group-hover:scale-110 transition-transform">💧</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="val-hum" class="text-4xl font-extrabold text-white tracking-tight">--</span>
+                        <span class="text-xl font-medium text-slate-400">%</span>
+                    </div>
+                    <div class="mt-4 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-hum" class="bg-blue-400 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <!-- Soil Moisture Card -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-cyan-500/40 transition-all duration-300 group">
+                    <div class="flex justify-between items-center text-slate-400 mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Soil Moisture Content</span>
+                        <span class="text-xl p-2 bg-slate-800/80 rounded-lg group-hover:scale-110 transition-transform">🌱</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="val-soil" class="text-4xl font-extrabold text-white tracking-tight">--</span>
+                        <span class="text-xl font-medium text-slate-400">%</span>
+                    </div>
+                    <div class="mt-4 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-soil" class="bg-cyan-400 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
+                <!-- Light Level Card -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl hover:border-amber-500/40 transition-all duration-300 group">
+                    <div class="flex justify-between items-center text-slate-400 mb-3">
+                        <span class="text-xs font-semibold uppercase tracking-wider">Illumination Level</span>
+                        <span class="text-xl p-2 bg-slate-800/80 rounded-lg group-hover:scale-110 transition-transform">☀️</span>
+                    </div>
+                    <div class="flex items-baseline space-x-2">
+                        <span id="val-light" class="text-4xl font-extrabold text-white tracking-tight">--</span>
+                        <span class="text-xl font-medium text-slate-400">pts</span>
+                    </div>
+                    <div class="mt-4 w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-light" class="bg-amber-400 h-full w-0 transition-all duration-500"></div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Air Humidity Card -->
-            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-blue-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">Air Humidity</span>
-                    <span class="text-xl">💧</span>
+            <!-- Right Column: System Status & Actuators Control Panel -->
+            <div class="space-y-6">
+                
+                <!-- Pump Status Widget -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center text-slate-400 mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Water Pump Actuator</span>
+                            <span class="text-xl">⚙️</span>
+                        </div>
+                        <div id="pump-container" class="mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center transition-all duration-300">
+                            <span id="val-pump" class="text-lg font-bold font-mono tracking-wide text-slate-300">UNKNOWN</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-4 text-center">Automated hysteresis control active</p>
                 </div>
-                <p class="text-4xl font-extrabold text-white mt-1">
-                    <span id="val-hum">--</span> <span class="text-xl text-gray-400 font-normal">%</span>
-                </p>
+
+                <!-- System Operational State Widget -->
+                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center text-slate-400 mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider">Safety & Operational State</span>
+                            <span class="text-xl">🛡️</span>
+                        </div>
+                        <div id="state-container" class="mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center transition-all duration-300">
+                            <span id="val-state" class="text-sm font-mono font-bold text-indigo-400">WAITING FOR DATA...</span>
+                        </div>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs text-slate-500">
+                        <span>Sync Status: <span id="val-time" class="font-mono text-slate-400">--:--:--</span></span>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Light Level Card -->
-            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-yellow-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">Light Level</span>
-                    <span class="text-xl">☀️</span>
-                </div>
-                <p class="text-4xl font-extrabold text-white mt-1">
-                    <span id="val-light">--</span> <span class="text-xl text-gray-400 font-normal">pts</span>
-                </p>
-            </div>
+        </div>
 
-            <!-- Soil Moisture Card -->
-           <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-emerald-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">Soil Moisture</span>
-                    <span class="text-xl">🌱</span>
-                </div>
-                <p class="text-4xl font-extrabold text-white mt-1">
-                    <span id="val-soil">--</span> <span class="text-xl text-gray-400 font-normal">%</span>
-                </p>
-            </div>
-
-            <!-- Pump Status Card -->
-            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-cyan-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">Pump Status</span>
-                    <span class="text-xl">⚙️</span>
-                </div>
-                <div class="mt-2">
-                    <span id="val-pump" class="text-lg font-bold px-3 py-1 rounded-lg inline-block bg-gray-700 text-gray-300 border border-gray-600">
-                        UNKNOWN
-                    </span>
-                </div>
-            </div>>
-
-            <!-- System Operational State Card -->
-            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-indigo-500/50 transition-all duration-300">
-                <div class="flex justify-between items-center text-gray-400 mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider">System State</span>
-                    <span class="text-xl">🛡️</span>
-                </div>
-                <p id="val-state" class="text-lg font-mono font-bold mt-2 text-indigo-400 truncate">
-                    WAITING FOR DATA...
-                </p>
-            </div>
-
-        </main>
-        
-        <footer class="mt-12 text-center text-xs text-gray-600">
-            Last packet received: <span id="val-time" class="font-mono">--:--:--</span>
+        <!-- Footer -->
+        <footer class="text-center text-xs text-slate-600 pt-4">
+            Enterprise IoT Smart Garden System &bull; Powered by ESP32, MQTT & Tailwind CSS
         </footer>
     </div>
 
