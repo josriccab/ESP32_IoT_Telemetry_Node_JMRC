@@ -27,15 +27,25 @@
         <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
             
             <!-- Temperature Card -->
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Temperature</p>
-                <p class="text-4xl font-extrabold text-white mt-2"><span id="val-temp">--</span> <span class="text-xl text-gray-400">°C</span></p>
+            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-green-500/50 transition-all duration-300">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Temperature</span>
+                    <span class="text-xl">🌡️</span>
+                </div>
+                <p class="text-4xl font-extrabold text-white mt-1">
+                    <span id="val-temp">--</span> <span class="text-xl text-gray-400 font-normal">°C</span>
+                </p>
             </div>
 
-            <!-- Humidity Card -->
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Air Humidity</p>
-                <p class="text-4xl font-extrabold text-white mt-2"><span id="val-hum">--</span> <span class="text-xl text-gray-400">%</span></p>
+            <!-- Air Humidity Card -->
+            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-blue-500/50 transition-all duration-300">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Air Humidity</span>
+                    <span class="text-xl">💧</span>
+                </div>
+                <p class="text-4xl font-extrabold text-white mt-1">
+                    <span id="val-hum">--</span> <span class="text-xl text-gray-400 font-normal">%</span>
+                </p>
             </div>
 
             <!-- Light Level Card -->
@@ -50,27 +60,44 @@
             </div>
 
             <!-- Soil Moisture Card -->
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Soil Moisture</p>
-                <p class="text-4xl font-extrabold text-white mt-2"><span id="val-soil">--</span></p>
+           <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-emerald-500/50 transition-all duration-300">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Soil Moisture</span>
+                    <span class="text-xl">🌱</span>
+                </div>
+                <p class="text-4xl font-extrabold text-white mt-1">
+                    <span id="val-soil">--</span> <span class="text-xl text-gray-400 font-normal">%</span>
+                </p>
             </div>
 
             <!-- Pump Status Card -->
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Pump Status</p>
-                <p class="text-2xl font-bold mt-3 px-3 py-1 rounded inline-block bg-gray-700 text-gray-300" id="val-pump">UNKNOWN</p>
-            </div>
+            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-cyan-500/50 transition-all duration-300">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider">Pump Status</span>
+                    <span class="text-xl">⚙️</span>
+                </div>
+                <div class="mt-2">
+                    <span id="val-pump" class="text-lg font-bold px-3 py-1 rounded-lg inline-block bg-gray-700 text-gray-300 border border-gray-600">
+                        UNKNOWN
+                    </span>
+                </div>
+            </div>>
 
             <!-- System Operational State Card -->
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">System  State</p>
-                <p class="text-xl font-mono mt-3 text-blue-400" id="val-state">AWAITING DATA...</p>
+            <div class="bg-gray-800/60 backdrop-blur-md p-6 rounded-2xl border border-gray-700/60 shadow-xl hover:border-indigo-500/50 transition-all duration-300">
+                <div class="flex justify-between items-center text-gray-400 mb-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider">System State</span>
+                    <span class="text-xl">🛡️</span>
+                </div>
+                <p id="val-state" class="text-lg font-mono font-bold mt-2 text-indigo-400 truncate">
+                    WAITING FOR DATA...
+                </p>
             </div>
 
         </main>
         
         <footer class="mt-12 text-center text-xs text-gray-600">
-            Último mensaje recibido: <span id="val-time" class="font-mono">--:--:--</span>
+            Last packet received: <span id="val-time" class="font-mono">--:--:--</span>
         </footer>
     </div>
 
