@@ -164,45 +164,71 @@
         const badge = document.getElementById('status-badge');
 
         client.on('connect', () => {
-            badge.innerText = "Conectado en Vivo";
-            badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30";
+            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span><span>Live Connected</span>';
+            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center space-x-2 shadow-inner";
             client.subscribe(topic);
         });
 
         client.on('error', (err) => {
-            badge.innerText = "Error de Conexión";
-            badge.className = "px-3 py-1 rounded-full text-xs font-semibold bg-red-500/20 text-red-400 border border-red-500/30";
+            badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-400"></span><span>Connection Error</span>';
+            badge.className = "px-4 py-2 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center space-x-2 shadow-inner";
             console.error(err);
         });
 
-        // Parse incoming telemetry JSON and update DOM elements dynamically
         client.on('message', (receivedTopic, message) => {
             try {
                 const data = JSON.parse(message.toString());
                 
-                // Inject clean formatted values into HTML elements
+                // Update Node ID
                 document.getElementById('node-id').innerText = data.device_id;
-                document.getElementById('val-temp').innerText = Number(data.temperature).toFixed(1);
-                document.getElementById('val-hum').innerText = data.humidity;
-                document.getElementById('val-light').innerText = data.light_raw;
-                document.getElementById('val-soil').innerText = data.soil_moisture;
+                
+                // Values & Progress Bars Updates
+                const temp = Number(data.temperature).toFixed(1);
+                const hum = Number(data.humidity).toFixed(0);
+                const soil = Number(data.soil_moisture).toFixed(0);
+                const light = Number(data.light_raw).toFixed(0);
+
+                document.getElementById('val-temp').innerText = temp;
+                document.getElementById('bar-temp').style.width = Math.min(Math.max((temp / 50) * 100, 0), 100) + '%';
+
+                document.getElementById('val-hum').innerText = hum;
+                document.getElementById('bar-hum').style.width = Math.min(Math.max(hum, 0), 100) + '%';
+
+                document.getElementById('val-soil').innerText = soil;
+                document.getElementById('bar-soil').style.width = Math.min(Math.max(soil, 0), 100) + '%';
+
+                document.getElementById('val-light').innerText = light;
+                document.getElementById('bar-light').style.width = Math.min(Math.max((light / 4095) * 100, 0), 100) + '%';
+
                 document.getElementById('val-state').innerText = data.system_state;
                 
-                // Update timestamp for the last successfully processed packet
-                const pump = document.getElementById('val-pump');
-                pump.innerText = data.pump_status;
-                if(data.pump_status === "ON") {
-                    pump.className = "text-xl font-bold mt-3 px-3 py-1 rounded inline-block bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse";
+                // Pump Interactive Styles
+                const pumpEl = document.getElementById('val-pump');
+                const pumpContainer = document.getElementById('pump-container');
+                pumpEl.innerText = data.pump_status;
+
+                if (data.pump_status === "ON") {
+                    pumpContainer.className = "mt-2 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center shadow-lg shadow-blue-500/10 animate-pulse";
+                    pumpEl.className = "text-lg font-bold font-mono tracking-wide text-blue-400";
                 } else {
-                    pump.className = "text-xl font-bold mt-3 px-3 py-1 rounded inline-block bg-red-500/20 text-red-400 border border-red-500/30";
+                    pumpContainer.className = "mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center";
+                    pumpEl.className = "text-lg font-bold font-mono tracking-wide text-slate-400";
                 }
 
-                // Update timestamp for the last successfully processed packet
-                const ahora = new Date();
-                document.getElementById('val-time').innerText = ahora.toLocaleTimeString();
+                // System State Interactive Border Highlight
+                const stateContainer = document.getElementById('state-container');
+                if (data.system_state === "WARNING_OVERHEATING") {
+                    stateContainer.className = "mt-2 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center animate-bounce";
+                } else {
+                    stateContainer.className = "mt-2 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center";
+                }
+
+                // Timestamp update
+                const now = new Date();
+                document.getElementById('val-time').innerText = now.toLocaleTimeString();
 
             } catch (error) {
-                console.error("El mensaje recibido no era un JSON válido:", error);
+                console.error("Failed to parse incoming payload as valid JSON:", error);
             }
         });
     </script>
